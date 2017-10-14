@@ -19,6 +19,8 @@ public:
 
     std::string greedyAlgorithm();
 
+    std::string localSearch();
+
     std::string dynamicProgramming();
 
     void loadFromFile(std::string filename);

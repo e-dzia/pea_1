@@ -5,7 +5,6 @@
 #include "TravellingSalesmanProblem.h"
 
 void test();
-void mainMenu(Problem *p);
 
 int main() {
     srand(time(NULL));
