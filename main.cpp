@@ -1,7 +1,5 @@
 #include <iostream>
 #include <ctime>
-#include "Problem.h"
-#include "DiscreteKnapsackProblem.h"
 #include "TravellingSalesmanProblem.h"
 
 void test();
@@ -9,8 +7,9 @@ void test();
 int main() {
     srand(time(NULL));
 
-    TravellingSalesmanProblem * tsp;
+    TravellingSalesmanProblem * tsp = new TravellingSalesmanProblem;
     tsp->menu();
+    //std::cout << tsp_dp->dynamicProgramming();
     delete tsp;
     //test();
 
@@ -18,7 +17,7 @@ int main() {
 }
 
 
-void test(){
+/*void test(){
     Problem *p = new TravellingSalesmanProblem();
     std::ofstream fout;
     fout.open("results.txt");
@@ -44,4 +43,4 @@ void test(){
 
     fout.close();
     delete p;
-}
+}*/

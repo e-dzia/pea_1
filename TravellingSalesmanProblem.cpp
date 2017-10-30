@@ -5,6 +5,7 @@
 #include "TravellingSalesmanProblem.h"
 #include <sstream>
 #include <chrono>
+#include <cmath>
 
 std::string TravellingSalesmanProblem::bruteForce() {
     int start = 0;
@@ -127,17 +128,87 @@ std::string TravellingSalesmanProblem::localSearch() {
     return ss.str();
 }
 
-std::string TravellingSalesmanProblem::dynamicProgramming() {
+std::string TravellingSalesmanProblem::dynamicProgramming()
+{
+    npow = (int) pow(2, numberOfCities); //2^numberOfCities
 
+    g = new int*[numberOfCities]; //tabela dwuwymiarowa
+    for (int i = 0; i < numberOfCities; i++){
+        g[i] = new int[npow];
+    }
+    p = new int*[numberOfCities]; //tabela dwuwymiarowa
+    for (int i = 0; i < numberOfCities; i++){
+        p[i] = new int[npow];
+    }
 
+    for (int i = 0; i < numberOfCities; i++) {
+        for (int j = 0; j < npow; j++) {
+            g[i][j] = -1;
+            p[i][j] = -1;
+        }
+    }
 
+    for (int i = 0; i < numberOfCities; i++) {
+        g[i][0] = gm.getEdgeLength(i,0);
+    } //pierwsza kolumna - dane wejściowe, reszta -1
+    int result = tsp_dp(0, npow - 2); //uruchom tsp_dp start = 0, set = 2^numberOfCities - 2
 
+    /*std::cout<<"\ng:";
+
+    for(int i=0;i < npow;i++)
+    {
+        std::cout<<"\n";
+        for(int j=0;j < numberOfCities;j++)
+            std::cout<<"\t"<<g[j][i];
+    }
+    std::cout<<"\n\n";
+*/
+
+    arrayOfResults.push_back(0); //wyjscie - dodaj 0
+    getPath(0, npow - 2); //getPath, start = 0, set = 2^numberOfCities - 2
 
     std::stringstream ss;
-    ss << "Algorytm programowania dynamicznego.\nWynik: " << std::endl;
+    ss << "Algorytm programowania dynamicznego.\nDroga: " << std::endl;
+    for (auto &&item : arrayOfResults) {
+        ss << item << " ";
+    }
+    ss << "\nWynik: " << result << std::endl;
+
     return ss.str();
 }
 
+int TravellingSalesmanProblem::tsp_dp(int start, int set) {
+    int masked, mask, result = -1, temp;
+
+    if (g[start][set] != -1) { //jak coś jest w kolumnie set, to wróć
+        return g[start][set];
+    } else {
+        for (int x = 0; x < numberOfCities; x++) {
+            mask = npow - 1 - (int) pow(2, x); //mask = 2^numberOfCities - 1 - 2^x
+            masked = set & mask; //maska binarna AND
+            if (masked != set) {
+                temp = gm.getEdgeLength(start,x) + tsp_dp(x, masked); //droga od start do x + tsp_dp(x,masked)
+                if (result == -1 || result > temp) {
+                    result = temp;
+                    p[start][set] = x;
+                }
+            }
+        }
+        g[start][set] = result;
+        return result;
+    }
+}
+
+void TravellingSalesmanProblem::getPath(int start, int set) { //tu tylko znajduje trasę (chyba)
+    if (p[start][set] == -1) {
+        return;
+    }
+    int x = p[start][set];
+    int mask = npow - 1 - (int) pow(2, x);
+    int masked = set & mask;
+    arrayOfResults.push_back(x);
+    getPath(x, masked);
+}
 
 void TravellingSalesmanProblem::loadFromFile(std::string filename) {
     std::ifstream fin;
@@ -293,7 +364,7 @@ void TravellingSalesmanProblem::menu() {
     std::cin >> chosen;
     switch(chosen){
         case 1:
-            this->loadFromFile("data_salesman.txt");
+            this->loadFromFile("dane.txt");
             break;
         case 2:
             std::cout << "Prosze podac liczbe miast.\n";
@@ -342,4 +413,10 @@ void TravellingSalesmanProblem::menu() {
             break;
     }
     this->menu();
+}
+
+TravellingSalesmanProblem::TravellingSalesmanProblem() {
+    g = NULL;
+    p = NULL;
+   // d = NULL;
 }

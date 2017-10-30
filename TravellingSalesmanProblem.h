@@ -8,13 +8,22 @@
 
 #include "GraphMatrix.h"
 #include <fstream>
+#include <vector>
 
 class TravellingSalesmanProblem{
 private:
     GraphMatrix gm;
     int numberOfCities;
+    int npow;
+    int **g, **p;
+    std::vector<int> arrayOfResults;
+
+    int tsp_dp(int start, int set);
+    void getPath(int start, int set);
 
 public:
+    TravellingSalesmanProblem();
+
     std::string bruteForce();
 
     std::string greedyAlgorithm();
