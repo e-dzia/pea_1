@@ -130,84 +130,89 @@ std::string TravellingSalesmanProblem::localSearch() {
 
 std::string TravellingSalesmanProblem::dynamicProgramming()
 {
-    npow = (int) pow(2, numberOfCities); //2^numberOfCities
+    npow = (long long int) pow(2, numberOfCities); //2^numberOfCities
 
-    g = new int*[numberOfCities]; //tabela dwuwymiarowa
-    for (int i = 0; i < numberOfCities; i++){
-        g[i] = new int[npow];
-    }
-    p = new int*[numberOfCities]; //tabela dwuwymiarowa
-    for (int i = 0; i < numberOfCities; i++){
-        p[i] = new int[npow];
-    }
-
+    subproblems = new int*[numberOfCities]; //tabela dwuwymiarowa
+    path = new int*[numberOfCities]; //tabela dwuwymiarowa
     for (int i = 0; i < numberOfCities; i++) {
-        for (int j = 0; j < npow; j++) {
-            g[i][j] = -1;
-            p[i][j] = -1;
+        subproblems[i] = new int[npow/2];
+        path[i] = new int[npow/2];
+
+        for (int j = 0; j < npow/2; j++) {
+            subproblems[i][j] = -1;
+            path[i][j] = -1;
         }
     }
 
-    for (int i = 0; i < numberOfCities; i++) {
-        g[i][0] = gm.getEdgeLength(i,0);
+    for (int i = 1; i < numberOfCities; i++) {
+        subproblems[i][0] = gm.getEdgeLength(i,0);
     } //pierwsza kolumna - dane wejściowe, reszta -1
-    int result = tsp_dp(0, npow - 2); //uruchom tsp_dp start = 0, set = 2^numberOfCities - 2
+    int result = dp_func(0, npow - 2); //uruchom dp_func start = 0, set = 2^numberOfCities - 2
 
-    /*std::cout<<"\ng:";
+    /*std::cout<<"\nsubproblems:";
 
-    for(int i=0;i < npow;i++)
+    for(int i=0;i < npow/2;i++)
     {
         std::cout<<"\n";
         for(int j=0;j < numberOfCities;j++)
-            std::cout<<"\t"<<g[j][i];
+            std::cout<<"\t"<<subproblems[j][i];
     }
-    std::cout<<"\n\n";
-*/
+    std::cout<<"\n\n";*/
 
-    arrayOfResults.push_back(0); //wyjscie - dodaj 0
-    getPath(0, npow - 2); //getPath, start = 0, set = 2^numberOfCities - 2
+    arrayOfResults.push_back(0); //wyjscie - dodaj 0 - początkowy element
+    dp_getPath(0, npow - 2); //dp_getPath, start = 0, set = 2^numberOfCities - 2
 
     std::stringstream ss;
-    ss << "Algorytm programowania dynamicznego.\nDroga: " << std::endl;
+    ss << "Algorytm programowania dynamicznego.\nWynik: " << std::endl;
     for (auto &&item : arrayOfResults) {
         ss << item << " ";
     }
-    ss << "\nWynik: " << result << std::endl;
+    ss << " : " << result << std::endl;
+
+
+    for (int i = 0; i < numberOfCities; i++) {
+        delete[] subproblems[i];
+        delete[] path[i];
+
+    }
+    delete[] subproblems;
+    delete[] path;
 
     return ss.str();
 }
 
-int TravellingSalesmanProblem::tsp_dp(int start, int set) {
-    int masked, mask, result = -1, temp;
+int TravellingSalesmanProblem::dp_func(int start, long long int visited) {
+    long long int masked, mask;
+    int result = -1, temp;
 
-    if (g[start][set] != -1) { //jak coś jest w kolumnie set, to wróć
-        return g[start][set];
+    if (subproblems[start][visited/2] != -1) {
+        return subproblems[start][visited/2];
     } else {
-        for (int x = 0; x < numberOfCities; x++) {
-            mask = npow - 1 - (int) pow(2, x); //mask = 2^numberOfCities - 1 - 2^x
-            masked = set & mask; //maska binarna AND
-            if (masked != set) {
-                temp = gm.getEdgeLength(start,x) + tsp_dp(x, masked); //droga od start do x + tsp_dp(x,masked)
+        for (int i = 0; i < numberOfCities; i++) {
+            mask = npow - 1 - (int) pow(2, i); //mask = 2^numberOfCities - 1 - 2^i
+            masked = visited & mask; //maska binarna AND
+            if (masked != visited) {
+                temp = gm.getEdgeLength(start,i) + dp_func(i, masked); //droga od start do i + dp_func(i,masked)
                 if (result == -1 || result > temp) {
                     result = temp;
-                    p[start][set] = x;
+                    path[start][visited/2] = i;
                 }
             }
         }
-        g[start][set] = result;
+        subproblems[start][visited/2] = result;
         return result;
     }
 }
 
-void TravellingSalesmanProblem::getPath(int start, int set) { //tu tylko znajduje trasę (chyba)
-    if (p[start][set] == -1) {
+void TravellingSalesmanProblem::dp_getPath(int start, int set) { //tu tylko znajduje trasę
+    if (path[start][set/2] == -1) {
         return;
     }
-    int x = p[start][set];
+    int x = path[start][set/2];
     int mask = npow - 1 - (int) pow(2, x);
     int masked = set & mask;
     arrayOfResults.push_back(x);
-    getPath(x, masked);
+    dp_getPath(x, masked);
 }
 
 void TravellingSalesmanProblem::loadFromFile(std::string filename) {
@@ -219,15 +224,16 @@ void TravellingSalesmanProblem::loadFromFile(std::string filename) {
         for (int j = 0; j < numberOfCities; j++){
             int length;
             fin >> length;
+            if (length == -1) length = 0;
             gm.setEdge(i,j,length);
         }
     }
 }
 
-void TravellingSalesmanProblem::generateRandom(int number, int size) {
-    numberOfCities = number;
+void TravellingSalesmanProblem::generateRandom(int size) {
+    numberOfCities = size;
     gm.createRandom(numberOfCities,100);
-    gm.makeBothWays();
+    //gm.makeBothWays();
 }
 
 bool TravellingSalesmanProblem::allVisited(bool *visited) {
@@ -298,7 +304,7 @@ double TravellingSalesmanProblem::testTime(int algorithmType) {
     std::chrono::nanoseconds time_end;
     //double time_duration;
 
-    this->loadFromFile("data_salesman.txt");
+    //this->loadFromFile("data_salesman.txt");
     switch (algorithmType){
         case 0:
             time_start = std::chrono::duration_cast<std::chrono::nanoseconds>(
@@ -338,10 +344,10 @@ void TravellingSalesmanProblem::saveToFile(std::string filename) {
     std::ofstream fout;
     fout.open(filename.c_str());
     fout << numberOfCities << std::endl;
-    gm.createMatrix(numberOfCities);
+    //gm.createMatrix(numberOfCities);
     for (int i = 0; i < numberOfCities; i++){
         for (int j = 0; j < numberOfCities; j++){
-            int length;
+            int length = gm.getEdgeLength(i,j);
             fout << length << " ";
         }
         fout << std::endl;
@@ -370,7 +376,7 @@ void TravellingSalesmanProblem::menu() {
             std::cout << "Prosze podac liczbe miast.\n";
             int v;
             std::cin >> v;
-            this->generateRandom(v, 0);
+            this->generateRandom(v);
             break;
         case 3:
             time_start = std::chrono::duration_cast<std::chrono::nanoseconds>(
@@ -416,7 +422,6 @@ void TravellingSalesmanProblem::menu() {
 }
 
 TravellingSalesmanProblem::TravellingSalesmanProblem() {
-    g = NULL;
-    p = NULL;
-   // d = NULL;
+    subproblems = NULL;
+    path = NULL;
 }

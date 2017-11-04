@@ -3,44 +3,57 @@
 #include "TravellingSalesmanProblem.h"
 
 void test();
+void test_both();
 
 int main() {
     srand(time(NULL));
 
-    TravellingSalesmanProblem * tsp = new TravellingSalesmanProblem;
-    tsp->menu();
-    //std::cout << tsp_dp->dynamicProgramming();
-    delete tsp;
-    //test();
+   /*TravellingSalesmanProblem * tsp = new TravellingSalesmanProblem;
+    //tsp->menu();
+    //tsp->loadFromFile("dane.txt");
+
+    tsp->generateRandom(20);
+    tsp->saveToFile("data_salesman.txt");
+    std::cout << tsp->testTime(3);
+    delete tsp;*/
+
+
+    test();
 
     return 0;
 }
 
 
-/*void test(){
-    Problem *p = new TravellingSalesmanProblem();
+void test(){
+    TravellingSalesmanProblem *tsp = new TravellingSalesmanProblem();
     std::ofstream fout;
-    fout.open("results.txt");
-    int size[] = {8,9,10,11,12};
-    int knapsack[] = {50,100,500};
-    int algorithms[] = {0, 1, 2};
-    for (int j = 0; j < 3; j++){ //gestosc
-        cout << "d:  " << knapsack[j] << endl;
-        for (int k = 0; k < 2; k++){ //algorytmy
-            cout << "a:    " << algorithms[k] << endl;
-            for (int l = 0; l < 5; l++){ //wielkosc
-                for (int i = 0; i < 10; i++){ //powtorzenia
-                    p->generateRandom(size[l],0);
-                    p->saveToFile("data_salesman.txt");
-
-                    fout << knapsack[j] << " " << algorithms[k] << " " << size[l] << " "
-                         << p->testTime(algorithms[k])
-                         << endl;
-                }
-            }
+    fout.open("results_dp.txt");
+    int size[] = {8, 10, 12, 14, 16, 18, 20, 22};
+    for (int i = 0; i < 8; i++){ //rozmiar
+        for (int j = 0; j < 100; j++){
+            tsp->generateRandom(size[i]);
+            //tsp->saveToFile("data_salesman.txt");
+            fout << size[i] << " " << tsp->testTime(3)<< std::endl;
         }
     }
 
     fout.close();
-    delete p;
-}*/
+    delete tsp;
+}
+
+void test_both(){
+    TravellingSalesmanProblem *tsp = new TravellingSalesmanProblem();
+    std::ofstream fout;
+    fout.open("results_2.txt");
+    int size[] = {8,9,10,11,12};
+    for (int i = 0; i < 5; i++){ //rozmiar
+        for (int j = 0; j < 100; j++){
+            tsp->generateRandom(size[i]);
+            tsp->saveToFile("data_salesman.txt");
+            fout << size[i] << " " << tsp->testTime(0) << " " << tsp->testTime(3)<< std::endl;
+        }
+    }
+
+    fout.close();
+    delete tsp;
+}

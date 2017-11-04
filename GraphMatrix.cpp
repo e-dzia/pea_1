@@ -124,7 +124,8 @@ void GraphMatrix::createRandom(int vertexes, int density) {
             again = true;
             startVertex = i%vertexes;
             endVertex = rand()%vertexes;
-            length = rand()%10+1;
+            length = rand()%50+1;
+            //std::cout << length << " ";
             if (startVertex != endVertex){
                 if (matrix[startVertex][endVertex] == 0){
                     matrix[startVertex][endVertex] = length;
@@ -134,56 +135,8 @@ void GraphMatrix::createRandom(int vertexes, int density) {
 
         }while (again);
     }
+
 }
-
-int **GraphMatrix::toSortedArray() {
-    int **result = new int*[edges];
-    for (int i = 0; i < edges; i++){
-        result[i] = new int[3]; // 0 - od, 1 - do, 2 - dlugosc
-    }
-
-    int index = 0;
-    for (int i = 0; i < vertexes; i++){
-        for (int j = 0; j < vertexes; j++){
-            if (matrix[i][j] > 0){
-                result[index][0] = i;
-                result[index][1] = j;
-                result[index][2] = matrix[i][j];
-                index++;
-            }
-        }
-    }
-
-    //sortowanie babelkowe
-    for (int i = 0; i < index; i++){
-        for (int j = 0; j < index-1; j++){
-            if (result[i][2] < result[j][2]){
-                for (int w = 0; w <3; w++){
-                    int tmp = result[i][w];
-                    result[i][w] = result[j][w];
-                    result[j][w] = tmp;
-                }
-
-            }
-        }
-    }
-
-    return result;
-}
-
-/*Array2 * GraphMatrix::getNeighbours(int index) {
-    Array2 *result = new Array2[3]; //1 -sasiad, 2 - dlugosc, 0-obecny wierzcholek
-
-    for (int i = 0; i < this->getNumberOfVertexes(); i++){
-            if (matrix[index][i] != 0 && result[1].findElement(i) == -1){
-                result[0].addElement(index,0);
-                result[1].addElement(i,0);
-                result[2].addElement(matrix[index][i],0);
-            }
-    }
-
-    return result;
-}*/
 
 void GraphMatrix::makeBothWays() {
     for (int i = 0; i < this->vertexes; i++){
@@ -195,21 +148,6 @@ void GraphMatrix::makeBothWays() {
     }
     this->countEdges();
 }
-
-/*Array2 * GraphMatrix::toArray() {
-    Array2 *l = new Array2[3];
-
-    for (int i = 0; i < vertexes; i++){
-        for (int j = 0; j < vertexes; j++){
-            if (matrix[i][j] != 0){
-                l[0].addElement(i,0);
-                l[1].addElement(j,0);
-                l[2].addElement(matrix[i][j],0);
-            }
-        }
-    }
-    return l;
-}*/
 
 void GraphMatrix::setEdge(int start, int end, int length) {
     matrix[start][end] = length;

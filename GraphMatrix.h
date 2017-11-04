@@ -29,12 +29,6 @@ public:
 
     void createRandom(int vertexes, int density) override;
 
-    int **toSortedArray() override;
-
-    //Array2 * getNeighbours(int index) override;
-
-    //Array2 * toArray() override;
-
     void setEdge(int start, int end, int length) override;
 
     int getEdgeLength(int start, int end) override;

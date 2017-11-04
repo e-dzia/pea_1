@@ -28,9 +28,6 @@ public:
     virtual void createRandom(int vertexes, int density) = 0;
     virtual void loadFromFile(std::string filename) = 0;
     virtual void print(std::ostream& str)const = 0;
-    virtual int** toSortedArray() = 0;
-    //virtual Array2 * toArray() = 0;
-    //virtual Array2 * getNeighbours(int index) = 0;
     virtual void makeBothWays() = 0;
     virtual void setEdge(int start, int end, int length) = 0;
     virtual int getEdgeLength(int start, int end) = 0;

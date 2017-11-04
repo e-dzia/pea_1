@@ -14,12 +14,12 @@ class TravellingSalesmanProblem{
 private:
     GraphMatrix gm;
     int numberOfCities;
-    int npow;
-    int **g, **p;
+    long long int npow;
+    int **subproblems, **path;
     std::vector<int> arrayOfResults;
 
-    int tsp_dp(int start, int set);
-    void getPath(int start, int set);
+    int dp_func(int start, long long int visited);
+    void dp_getPath(int start, int set);
 
 public:
     TravellingSalesmanProblem();
@@ -34,7 +34,7 @@ public:
 
     void loadFromFile(std::string filename);
 
-    void generateRandom(int number, int size);
+    void generateRandom(int size);
 
     bool allVisited(bool pBoolean[]);
 
