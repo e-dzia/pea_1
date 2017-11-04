@@ -130,15 +130,15 @@ std::string TravellingSalesmanProblem::localSearch() {
 
 std::string TravellingSalesmanProblem::dynamicProgramming()
 {
-    npow = (long long int) pow(2, numberOfCities); //2^numberOfCities
+    npow = (long long int) pow(2, numberOfCities-1); //2^numberOfCities
 
     subproblems = new int*[numberOfCities]; //tabela dwuwymiarowa
     path = new int*[numberOfCities]; //tabela dwuwymiarowa
     for (int i = 0; i < numberOfCities; i++) {
-        subproblems[i] = new int[npow/2];
-        path[i] = new int[npow/2];
+        subproblems[i] = new int[npow];
+        path[i] = new int[npow];
 
-        for (int j = 0; j < npow/2; j++) {
+        for (int j = 0; j < npow; j++) {
             subproblems[i][j] = -1;
             path[i][j] = -1;
         }
@@ -147,11 +147,11 @@ std::string TravellingSalesmanProblem::dynamicProgramming()
     for (int i = 1; i < numberOfCities; i++) {
         subproblems[i][0] = gm.getEdgeLength(i,0);
     } //pierwsza kolumna - dane wejściowe, reszta -1
-    int result = dp_func(0, npow - 2); //uruchom dp_func start = 0, set = 2^numberOfCities - 2
+    int result = dp_func(0, npow - 1); //uruchom dp_func start = 0, set = 2^numberOfCities - 2
 
     /*std::cout<<"\nsubproblems:";
 
-    for(int i=0;i < npow/2;i++)
+    for(int i=0;i < npow;i++)
     {
         std::cout<<"\n";
         for(int j=0;j < numberOfCities;j++)
@@ -160,7 +160,7 @@ std::string TravellingSalesmanProblem::dynamicProgramming()
     std::cout<<"\n\n";*/
 
     arrayOfResults.push_back(0); //wyjscie - dodaj 0 - początkowy element
-    dp_getPath(0, npow - 2); //dp_getPath, start = 0, set = 2^numberOfCities - 2
+    dp_getPath(0, npow - 1); //dp_getPath, start = 0, set = 2^numberOfCities - 2
 
     std::stringstream ss;
     ss << "Algorytm programowania dynamicznego.\nWynik: " << std::endl;
@@ -185,34 +185,34 @@ int TravellingSalesmanProblem::dp_func(int start, long long int visited) {
     long long int masked, mask;
     int result = -1, temp;
 
-    if (subproblems[start][visited/2] != -1) {
-        return subproblems[start][visited/2];
+    if (subproblems[start][visited] != -1) {
+        return subproblems[start][visited];
     } else {
-        for (int i = 0; i < numberOfCities; i++) {
+        for (int i = 0; i < numberOfCities-1; i++) {
             mask = npow - 1 - (int) pow(2, i); //mask = 2^numberOfCities - 1 - 2^i
             masked = visited & mask; //maska binarna AND
             if (masked != visited) {
-                temp = gm.getEdgeLength(start,i) + dp_func(i, masked); //droga od start do i + dp_func(i,masked)
+                temp = gm.getEdgeLength(start,i+1) + dp_func(i+1, masked); //droga od start do i + dp_func(i,masked)
                 if (result == -1 || result > temp) {
                     result = temp;
-                    path[start][visited/2] = i;
+                    path[start][visited] = i+1;
                 }
             }
         }
-        subproblems[start][visited/2] = result;
+        subproblems[start][visited] = result;
         return result;
     }
 }
 
-void TravellingSalesmanProblem::dp_getPath(int start, int set) { //tu tylko znajduje trasę
-    if (path[start][set/2] == -1) {
+void TravellingSalesmanProblem::dp_getPath(int start, int visited) { //tu tylko znajduje trasę
+    if (path[start][visited] == -1) {
         return;
     }
-    int x = path[start][set/2];
-    int mask = npow - 1 - (int) pow(2, x);
-    int masked = set & mask;
-    arrayOfResults.push_back(x);
-    dp_getPath(x, masked);
+    int i = path[start][visited];
+    int mask = npow - 1 - (int) pow(2, i-1);
+    int masked = visited & mask;
+    arrayOfResults.push_back(i);
+    dp_getPath(i, masked);
 }
 
 void TravellingSalesmanProblem::loadFromFile(std::string filename) {

@@ -19,7 +19,7 @@ private:
     std::vector<int> arrayOfResults;
 
     int dp_func(int start, long long int visited);
-    void dp_getPath(int start, int set);
+    void dp_getPath(int start, int visited);
 
 public:
     TravellingSalesmanProblem();

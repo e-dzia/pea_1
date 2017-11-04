@@ -8,17 +8,19 @@ void test_both();
 int main() {
     srand(time(NULL));
 
-   /*TravellingSalesmanProblem * tsp = new TravellingSalesmanProblem;
+   TravellingSalesmanProblem * tsp = new TravellingSalesmanProblem;
     //tsp->menu();
     //tsp->loadFromFile("dane.txt");
 
-    tsp->generateRandom(20);
-    tsp->saveToFile("data_salesman.txt");
-    std::cout << tsp->testTime(3);
-    delete tsp;*/
+    //tsp->generateRandom(20);
+    //tsp->saveToFile("data_salesman.txt");
+    //std::cout << tsp->testTime(3);
+    tsp->loadFromFile("dane.txt");
+    std::cout << tsp->dynamicProgramming();
+    delete tsp;
 
 
-    test();
+    //test();
 
     return 0;
 }
