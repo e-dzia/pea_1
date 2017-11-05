@@ -11,13 +11,11 @@
 class GraphMatrix: public Graph{
 private:
     int **matrix;
-
     void countEdges() override;
 
 
 public:
     GraphMatrix();
-    //GraphMatrix(int size);
     ~GraphMatrix();
 
     void createMatrix(int size);
@@ -25,7 +23,7 @@ public:
     void loadFromFile(std::string filename) override;
     void print(std::ostream &str) const override;
 
-    void makeBothWays() override;
+    void makeBothWaysEqual() override;
 
     void createRandom(int vertexes, int density) override;
 

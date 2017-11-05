@@ -16,7 +16,7 @@ int main() {
     //tsp->saveToFile("data_salesman.txt");
     //std::cout << tsp->testTime(3);
     tsp->loadFromFile("dane.txt");
-    std::cout << tsp->dynamicProgramming();
+    std::cout << tsp->bruteForce();
     delete tsp;
 
 

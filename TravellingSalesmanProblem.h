@@ -14,7 +14,7 @@ class TravellingSalesmanProblem{
 private:
     GraphMatrix gm;
     int numberOfCities;
-    long long int npow;
+    long long int npow2;
     int **subproblems, **path;
     std::vector<int> arrayOfResults;
 

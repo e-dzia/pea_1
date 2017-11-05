@@ -12,21 +12,6 @@ GraphMatrix::GraphMatrix() {
     matrix = NULL;
 }
 
-/*GraphMatrix::GraphMatrix(int size) {
-    matrix = new int *[size];
-    for (int i = 0; i < size; i++){
-        matrix[i] = new int[size];
-    };
-    vertexes = size;
-    for (int i = 0; i < size; i++){
-        for (int j = 0; j < size; j++){
-            if (i==j) matrix[i][j] = -1;
-            else
-                matrix[i][j] = rand()%10;
-        }
-    }
-}*/
-
 GraphMatrix::~GraphMatrix() {
     if (matrix != NULL){
         for (int i = 0; i < vertexes; i++){
@@ -91,7 +76,8 @@ void GraphMatrix::createMatrix(int v) {
     matrix = new int *[v];
     for (int i = 0; i < v; i++){
         matrix[i] = new int[v];
-    };
+    }
+
     for (int i = 0; i < v; i++){
         for (int j = 0; j < v; j++){
             matrix[i][j] = 0;
@@ -125,7 +111,6 @@ void GraphMatrix::createRandom(int vertexes, int density) {
             startVertex = i%vertexes;
             endVertex = rand()%vertexes;
             length = rand()%50+1;
-            //std::cout << length << " ";
             if (startVertex != endVertex){
                 if (matrix[startVertex][endVertex] == 0){
                     matrix[startVertex][endVertex] = length;
@@ -138,7 +123,7 @@ void GraphMatrix::createRandom(int vertexes, int density) {
 
 }
 
-void GraphMatrix::makeBothWays() {
+void GraphMatrix::makeBothWaysEqual() {
     for (int i = 0; i < this->vertexes; i++){
         for (int j = 0; j < this->vertexes; j++){
             if (this->matrix[i][j] != 0){
