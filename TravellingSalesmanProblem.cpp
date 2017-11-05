@@ -106,7 +106,17 @@ std::string TravellingSalesmanProblem::localSearch() {
     for (int i = 0; i < numberOfCities-1; i++){
         permutation[i+1] = path[j];
         j = path[j];
-        result += (permutation[i]+'0');
+        int temp = permutation[i];
+        std::string tmp = "";
+        do {
+            char ch = temp%10 + '0';
+            temp /= 10;
+            tmp += ch;
+        }while(temp>0);
+        for (int j = tmp.size()-1; j >= 0; j--){
+            result += tmp[j];
+        }
+        result += " ";
     }
     result += (permutation[numberOfCities-1]+'0');
 
@@ -306,16 +316,14 @@ bool TravellingSalesmanProblem::allVisited(bool *visited) {
 }
 
 void TravellingSalesmanProblem::menu() {
-    std::chrono::nanoseconds time_start;
-    std::chrono::nanoseconds time_end;
     std::cout << "MENU - Problem komiwojazera\n"
-            "1. Wczytaj z pliku.\n"
+            "1. Wczytaj z pliku \"dane.txt\".\n"
             "2. Generuj losowo.\n"
             "3. Przeglad zupelny.\n"
             "4. Algorytm zachlanny.\n"
             "5. Przeszukiwanie lokalne.\n"
             "6. Programowanie dynamiczne.\n"
-            "7. Wyjdz do glownego menu.\n"
+            "7. Wyjdz.\n"
             "Prosze wpisac odpowiednia liczbe.\n";
     int chosen;
     std::cin >> chosen;
@@ -330,36 +338,16 @@ void TravellingSalesmanProblem::menu() {
             this->generateRandom(v);
             break;
         case 3:
-            time_start = std::chrono::duration_cast<std::chrono::nanoseconds>(
-                    std::chrono::high_resolution_clock::now().time_since_epoch());
             std::cout << "\n########################################\n" << this->bruteForce();
-            time_end = std::chrono::duration_cast<std::chrono::nanoseconds>(
-                    std::chrono::high_resolution_clock::now().time_since_epoch());
-            std::cout  << "Czas: " << (time_end - time_start) / std::chrono::nanoseconds(1)<< " nanosekund.\n";
             break;
         case 4:
-            time_start = std::chrono::duration_cast<std::chrono::nanoseconds>(
-                    std::chrono::high_resolution_clock::now().time_since_epoch());
             std::cout << "\n########################################\n" << this->greedyAlgorithm();
-            time_end = std::chrono::duration_cast<std::chrono::nanoseconds>(
-                    std::chrono::high_resolution_clock::now().time_since_epoch());
-            std::cout  << "Czas: " << (time_end - time_start) / std::chrono::nanoseconds(1) << " nanosekund.\n";
             break;
         case 5:
-            time_start = std::chrono::duration_cast<std::chrono::nanoseconds>(
-                    std::chrono::high_resolution_clock::now().time_since_epoch());
             std::cout << "\n########################################\n" << this->localSearch();
-            time_end = std::chrono::duration_cast<std::chrono::nanoseconds>(
-                    std::chrono::high_resolution_clock::now().time_since_epoch());
-            std::cout  << "Czas: " << (time_end - time_start) / std::chrono::nanoseconds(1) << " nanosekund.\n";
             break;
         case 6:
-            time_start = std::chrono::duration_cast<std::chrono::nanoseconds>(
-                    std::chrono::high_resolution_clock::now().time_since_epoch());
             std::cout << "\n########################################\n" << this->dynamicProgramming();
-            time_end = std::chrono::duration_cast<std::chrono::nanoseconds>(
-                    std::chrono::high_resolution_clock::now().time_since_epoch());
-            std::cout  << "Czas: " << (time_end - time_start) / std::chrono::nanoseconds(1)<< " nanosekund.\n";
             break;
         case 7:
             return;

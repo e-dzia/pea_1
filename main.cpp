@@ -9,14 +9,14 @@ int main() {
     srand(time(NULL));
 
    TravellingSalesmanProblem * tsp = new TravellingSalesmanProblem;
-    //tsp->menu();
+    tsp->menu();
     //tsp->loadFromFile("dane.txt");
 
     //tsp->generateRandom(20);
     //tsp->saveToFile("data_salesman.txt");
     //std::cout << tsp->testTime(3);
-    tsp->loadFromFile("dane.txt");
-    std::cout << tsp->bruteForce();
+    //tsp->loadFromFile("dane.txt");
+    //std::cout << tsp->bruteForce();
     delete tsp;
 
 
@@ -35,7 +35,7 @@ void test(){
         for (int j = 0; j < 100; j++){
             tsp->generateRandom(size[i]);
             //tsp->saveToFile("data_salesman.txt");
-            fout << size[i] << " " << tsp->testTime(3)<< std::endl;
+            fout << size[i] << " " << tsp->testTime(2)<< std::endl;
         }
     }
 
@@ -52,7 +52,7 @@ void test_both(){
         for (int j = 0; j < 100; j++){
             tsp->generateRandom(size[i]);
             tsp->saveToFile("data_salesman.txt");
-            fout << size[i] << " " << tsp->testTime(0) << " " << tsp->testTime(3)<< std::endl;
+            fout << size[i] << " " << tsp->testTime(0) << " " << tsp->testTime(2)<< std::endl;
         }
     }
 
