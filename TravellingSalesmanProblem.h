@@ -9,6 +9,7 @@
 #include "GraphMatrix.h"
 #include <fstream>
 #include <vector>
+#include "Timer.h"
 
 class TravellingSalesmanProblem{
 private:
@@ -38,11 +39,11 @@ public:
 
     bool allVisited(bool pBoolean[]);
 
-    void permute(int *permutation, int left, int right, int &min, std::string &result);
+    void permute(int *permutation, int left, int right, int &min, int *result);
 
     void swap(int *pInt, int *pInt1);
 
-    std::string countPath(int *permutation, int &min);
+    int countPath(int *permutation);
 
     double testTime(int algorithmType);
 

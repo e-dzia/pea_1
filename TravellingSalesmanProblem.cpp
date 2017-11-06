@@ -8,19 +8,20 @@
 #include <cmath>
 
 std::string TravellingSalesmanProblem::bruteForce() {
-    int start = 0;
     int *permutation = new int[numberOfCities];
     for (int i = 0; i < numberOfCities; i++){
         permutation[i] = i;
     }
+    int *result = new int[numberOfCities];
 
     int min = INT32_MAX;
-    std::string result = "";
     permute(permutation, 1, numberOfCities - 1, min, result);
+
     std::stringstream ss;
     ss << "Przeglad zupelny.\nWynik: " << std::endl;
-    ss << result;
-
+    for (int i = 0; i < numberOfCities; i++){
+        ss << result[i] << " ";
+    }
     ss << ": " << min << std::endl;
     return ss.str();
 }
@@ -100,40 +101,39 @@ std::string TravellingSalesmanProblem::localSearch() {
         i = position;
     }
     int *permutation = new int[numberOfCities];
+    int * result_permutation = new int[numberOfCities];
     int j = start;
     permutation[0] = start;
+    result_permutation[0] = start;
     std::string result = "";
     for (int i = 0; i < numberOfCities-1; i++){
         permutation[i+1] = path[j];
+        result_permutation[i+1] = path[j];
         j = path[j];
         int temp = permutation[i];
-        std::string tmp = "";
-        do {
-            char ch = temp%10 + '0';
-            temp /= 10;
-            tmp += ch;
-        }while(temp>0);
-        for (int j = tmp.size()-1; j >= 0; j--){
-            result += tmp[j];
-        }
-        result += " ";
     }
-    result += (permutation[numberOfCities-1]+'0');
 
     for (int i = 1; i < numberOfCities-1; i++){
         swap(permutation+i,permutation+i+1);
-        std::string result_tmp = countPath(permutation,length);
-        if (result_tmp != ""){
-            result = result_tmp;
+        int tmp = countPath(permutation);
+        if (tmp < length){
+            length = tmp;
+            for (int i = 0; i < numberOfCities; i++){
+                result_permutation[i] =  permutation[i];
+            }
         }
         else{
             swap(permutation+i,permutation+i+1);
         }
     }
 
+
     std::stringstream ss;
     ss << "Algorytm przeszukiwania lokalnego.\nWynik: " << std::endl;
-    ss << result << " ";
+    for (int i = 0; i < numberOfCities; i++){
+        ss << result_permutation[i] << " ";
+    }
+    //ss << result << " ";
     ss << ": " << length << std::endl;
     return ss.str();
 }
@@ -198,7 +198,7 @@ int TravellingSalesmanProblem::dp_func(int start, long long int visited) {
         return subproblems[start][visited];
     } else {
         for (int i = 0; i < numberOfCities-1; i++) {
-            mask = npow2 - 1 - (int) pow(2, i); //mask = 2^numberOfCities - 1 - 2^i
+            mask = npow2 - 1 - (1 << i);
             masked = visited & mask; //maska binarna AND
             if (masked != visited) {
                 temp = gm.getEdgeLength(start,i+1) + dp_func(i+1, masked); //droga od start do i + dp_func(i,masked)
@@ -224,17 +224,19 @@ void TravellingSalesmanProblem::dp_getPath(int start, int visited) { //tu tylko 
     dp_getPath(i, masked);
 }
 
-void TravellingSalesmanProblem::permute(int *permutation, int left, int right, int &min, std::string &result) {
-    int i;
+void TravellingSalesmanProblem::permute(int *permutation, int left, int right, int &min, int *result) {
     if (left == right){
-        std::string result_tmp = countPath(permutation, min);
-        if (result_tmp != ""){
-            result = result_tmp;
+        int length = countPath(permutation);
+        if (length < min){
+            min = length;
+            for (int i = 0; i < numberOfCities; i++){
+                result[i] =  permutation[i];
+            }
         }
     }
     else
     {
-        for (i = left; i <= right; i++)
+        for (int i = left; i <= right; i++)
         {
             swap((permutation+left), (permutation+i));
             permute(permutation, left + 1, right, min, result);
@@ -250,7 +252,7 @@ void TravellingSalesmanProblem::swap(int *pInt, int *pInt1) {
     *pInt1 = tmp;
 }
 
-std::string TravellingSalesmanProblem::countPath(int *permutation, int &min) {
+int TravellingSalesmanProblem::countPath(int *permutation) {
     int length = 0;
     int end;
     /* for (int i = 0; i < numberOfCities; i++){
@@ -263,15 +265,7 @@ std::string TravellingSalesmanProblem::countPath(int *permutation, int &min) {
     }
     length += gm.getEdgeLength(permutation[end],permutation[0]);
 
-    if (length < min){
-        min = length;
-        std::stringstream ss;
-        for (int i = 0; i < numberOfCities; i++){
-            ss << permutation[i] << " ";
-        }
-        return ss.str();
-    }
-    return "";
+    return length;
 }
 
 void TravellingSalesmanProblem::saveToFile(std::string filename) {
@@ -367,6 +361,9 @@ double TravellingSalesmanProblem::testTime(int algorithmType) {
      * 2 - przeszukiwanie lokalne
      * 3 - programowanie dynamiczne
      * */
+
+    Timer *timer = new Timer;
+    //double time;
     std::chrono::nanoseconds time_start;
     std::chrono::nanoseconds time_end;
     //double time_duration;
@@ -374,11 +371,9 @@ double TravellingSalesmanProblem::testTime(int algorithmType) {
     //this->loadFromFile("data_salesman.txt");
     switch (algorithmType){
         case 0:
-            time_start = std::chrono::duration_cast<std::chrono::nanoseconds>(
-                    std::chrono::high_resolution_clock::now().time_since_epoch());
+            timer->start();
             this->bruteForce();
-            time_end = std::chrono::duration_cast<std::chrono::nanoseconds>(
-                    std::chrono::high_resolution_clock::now().time_since_epoch());
+            timer->stop();
             break;
         case 1:
             time_start = std::chrono::duration_cast<std::chrono::nanoseconds>(
@@ -395,16 +390,15 @@ double TravellingSalesmanProblem::testTime(int algorithmType) {
                     std::chrono::high_resolution_clock::now().time_since_epoch());
             break;
         case 3:
-            time_start = std::chrono::duration_cast<std::chrono::nanoseconds>(
-                    std::chrono::high_resolution_clock::now().time_since_epoch());
+            timer->start();
             this->dynamicProgramming();
-            time_end = std::chrono::duration_cast<std::chrono::nanoseconds>(
-                    std::chrono::high_resolution_clock::now().time_since_epoch());
+            timer->stop();
             break;
     }
 
 
-    return (time_end - time_start) / std::chrono::nanoseconds(1);
+    //return (time_end - time_start) / std::chrono::nanoseconds(1);
+    return timer->get();
 }
 
 TravellingSalesmanProblem::TravellingSalesmanProblem() {
