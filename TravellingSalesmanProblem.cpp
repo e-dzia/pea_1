@@ -139,7 +139,7 @@ std::string TravellingSalesmanProblem::localSearch() {
 }
 
 std::string TravellingSalesmanProblem::dynamicProgramming() {
-    npow2 = (long long int) pow(2, numberOfCities-1); //2^(numberOfCities-1)
+    npow2 = 1 << (numberOfCities-1); //2^(numberOfCities-1)
 
     subproblems = new int*[numberOfCities]; //tabela dwuwymiarowa
     path = new int*[numberOfCities]; //tabela dwuwymiarowa
@@ -168,8 +168,8 @@ std::string TravellingSalesmanProblem::dynamicProgramming() {
     }
     std::cout<<"\n\n";*/
 
-    arrayOfResults.push_back(0); //wyjscie - dodaj 0 - początkowy element
-    dp_getPath(0, npow2 - 1); //dp_getPath, start = 0, set = 2^numberOfCities - 2
+    arrayOfResults.push_back(0);
+    dp_getPath(0, npow2 - 1);
 
     std::stringstream ss;
     ss << "Algorytm programowania dynamicznego.\nWynik: " << std::endl;
@@ -218,7 +218,7 @@ void TravellingSalesmanProblem::dp_getPath(int start, int visited) { //tu tylko 
         return;
     }
     int i = path[start][visited];
-    int mask = npow2 - 1 - (int) pow(2, i-1);
+    int mask = npow2 - 1 - (1 << (i-1));
     int masked = visited & mask;
     arrayOfResults.push_back(i);
     dp_getPath(i, masked);
@@ -311,7 +311,7 @@ bool TravellingSalesmanProblem::allVisited(bool *visited) {
 
 void TravellingSalesmanProblem::menu() {
     std::cout << "MENU - Problem komiwojazera\n"
-            "1. Wczytaj z pliku \"dane.txt\".\n"
+            "1. Wczytaj z pliku.\n"
             "2. Generuj losowo.\n"
             "3. Przeglad zupelny.\n"
             "4. Algorytm zachlanny.\n"
@@ -320,10 +320,13 @@ void TravellingSalesmanProblem::menu() {
             "7. Wyjdz.\n"
             "Prosze wpisac odpowiednia liczbe.\n";
     int chosen;
+    std::string file_name;
     std::cin >> chosen;
     switch(chosen){
         case 1:
-            this->loadFromFile("dane.txt");
+            std::cout << "Prosze podac nazwe pliku.\n";
+            std::cin >> file_name;
+            this->loadFromFile(file_name);
             break;
         case 2:
             std::cout << "Prosze podac liczbe miast.\n";
@@ -363,9 +366,8 @@ double TravellingSalesmanProblem::testTime(int algorithmType) {
      * */
 
     Timer *timer = new Timer;
-    //double time;
-    std::chrono::nanoseconds time_start;
-    std::chrono::nanoseconds time_end;
+    //std::chrono::nanoseconds time_start;
+    //std::chrono::nanoseconds time_end;
     //double time_duration;
 
     //this->loadFromFile("data_salesman.txt");
@@ -376,18 +378,14 @@ double TravellingSalesmanProblem::testTime(int algorithmType) {
             timer->stop();
             break;
         case 1:
-            time_start = std::chrono::duration_cast<std::chrono::nanoseconds>(
-                    std::chrono::high_resolution_clock::now().time_since_epoch());
+            timer->start();
             this->greedyAlgorithm();
-            time_end = std::chrono::duration_cast<std::chrono::nanoseconds>(
-                    std::chrono::high_resolution_clock::now().time_since_epoch());
+            timer->stop();
             break;
         case 2:
-            time_start = std::chrono::duration_cast<std::chrono::nanoseconds>(
-                    std::chrono::high_resolution_clock::now().time_since_epoch());
+            timer->start();
             this->localSearch();
-            time_end = std::chrono::duration_cast<std::chrono::nanoseconds>(
-                    std::chrono::high_resolution_clock::now().time_since_epoch());
+            timer->stop();
             break;
         case 3:
             timer->start();

@@ -16,10 +16,6 @@ LARGE_INTEGER Timer::getTime() {
     LARGE_INTEGER timer;
     QueryPerformanceCounter(&timer);
     return timer;
-
- /*   LARGE_INTEGER li;
-    QueryPerformanceCounter(&li);
-    return double(li.QuadPart - CounterStart) / PCFreq;*/
 }
 
 void Timer::start() {
